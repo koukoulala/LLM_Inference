@@ -22,12 +22,12 @@ def init_parse():
     parser.add_argument('--dtype', choices=['auto', 'float32', 'float16', 'bfloat16'], default='auto', help='data type for the model weights and activations')
     #parser.add_argument('--quantization', type=str, default='AWQ', help='The method used to load quantized the model.')
     #parser.add_argument('--tensor_parallel_size', type=int, default=1, help='use multiple GPUs')
-    parser.add_argument('--gpu_memory_utilization', type=float, default=1.0, help='GPU memory utilization')
+    parser.add_argument('--gpu_memory_utilization', type=float, default=0.98, help='GPU memory utilization')
     parser.add_argument('--temperature', type=float, default=0.9, help='LLM inference sampling params')
     parser.add_argument('--top_p', type=float, default=0.7, help='LLM inference sampling params')
 
     parser.add_argument('--batch_size', type=int, default=1, help='offline inference batch size')
-    parser.add_argument('--max_length', type=int, default=500, help='max length of generated text')
+    parser.add_argument('--max_tokens', type=int, default=500, help='max length of generated text')
 
     args = parser.parse_args()
     return args
