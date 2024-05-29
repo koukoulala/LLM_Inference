@@ -1,43 +1,45 @@
 import json
 import pandas as pd
-from peft import PeftModel
-from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, pipeline
+from vllm import LLM, SamplingParams
+from vllm.lora.request import LoRARequest
 import time
 import os
 
 class Offline_Inference:
 
     def __init__(self, args):
-        print("Initializing Offline Inference with Transformers pipeline, which cannot load Lora modules.")
-        # specify how to quantize the model
-        quantization_config = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_quant_type="nf4",
-            bnb_4bit_compute_dtype=args.dtype,
-        )
-        self.llm = AutoModelForCausalLM.from_pretrained(args.model, quantization_config=quantization_config, device_map="auto")
-        self.tokenizer = AutoTokenizer.from_pretrained(args.model)
-        
-        # Create a pipeline for text generation
-        self.llm_pipeline = pipeline("text-generation", model=self.llm, tokenizer=self.tokenizer, batch_size = args.batch_size)
+        cuda_visible_devices = os.environ.get('CUDA_VISIBLE_DEVICES', '')
+        if cuda_visible_devices:
+            tensor_parallel_size = len(cuda_visible_devices.split(','))
+        else:
+            tensor_parallel_size = 1
+        print(f"Number of GPUs specified by CUDA_VISIBLE_DEVICES: {tensor_parallel_size}")
+
+        self.llm = LLM(model=args.model, quantization=args.quantization,
+                       tensor_parallel_size=tensor_parallel_size, gpu_memory_utilization=args.gpu_memory_utilization,
+                       dtype=args.dtype, enable_lora=args.enable_lora)
+        self.sampling_params = SamplingParams(temperature=args.temperature, top_p=args.top_p, max_tokens=args.max_tokens)
 
     def batch_inference(self, args, prompt_list, RowId_list, fw, time_token_results):
         try:
             t0 = time.perf_counter()
-            outputs = self.llm_pipeline(prompt_list, do_sample=True, max_new_tokens=args.max_tokens, temperature=args.temperature, top_p=args.top_p)
+            if args.enable_lora:
+                outputs = self.llm.generate(prompt_list, self.sampling_params, lora_request=LoRARequest('lora_adapter', 1, args.lora_modules))
+            else:
+                outputs = self.llm.generate(prompt_list, self.sampling_params)
             t1 = time.perf_counter()
         except Exception as e:
             print(f"Error: {e}")
             return time_token_results
+        tokens_generated = 0
         for out_idx, output in enumerate(outputs):
             RowId = RowId_list[out_idx]
-            #print(RowId, output)
-            generated_text = output[0]['generated_text'][-1]["content"]
-            #tokens_generated += len(self.tokenizer(generated_text))
+            generated_text = output.outputs[0].text
+            tokens_generated += len(output.outputs[0].token_ids)
             fw.write(json.dumps({'RowId': RowId, 'response': generated_text}, ensure_ascii=False) + '\n')
 
         time_token_results.append(
-            {"time": t1 - t0}
+            {"time": t1 - t0, "tokens_generated": tokens_generated}
         )
 
         return time_token_results
@@ -56,9 +58,8 @@ class Offline_Inference:
             prompt_data = json.loads(line.strip())
             RowId = prompt_data["RowId"]
             prompt_text = prompt_data["prompt"]
-            message = [{"role": "user", "content": prompt_text}]
             RowId_list.append(RowId)
-            prompt_list.append(message)
+            prompt_list.append(prompt_text)
 
             if ((idx + 1) % args.batch_size) == 0:
                 time_token_results = self.batch_inference(args, prompt_list, RowId_list, fw, time_token_results)
@@ -72,6 +73,8 @@ class Offline_Inference:
         print(f"Total number of texts: {total_line}")
         df = pd.DataFrame(time_token_results)
         print(f"Average time to complete texts: {df.time.sum() / total_line: .3f}")
+        df["tokens_per_sec"] = df.tokens_generated / df.time
+        print(f"Average tokens/sec: {df.tokens_per_sec.mean(): .3f}")
 
         print("Inference completed")
             
