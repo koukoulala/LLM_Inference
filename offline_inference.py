@@ -1,6 +1,5 @@
 import json
 import pandas as pd
-from peft import PeftModel
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, pipeline
 import time
 import os
