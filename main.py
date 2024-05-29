@@ -22,6 +22,7 @@ def init_parse():
 
     '''params using in LLM inference procedure'''
     parser.add_argument('--dtype', choices=['auto', 'float32', 'float16', 'bfloat16'], default='float16', help='data type for the model weights and activations')
+    parser.add_argument('--use_flash_attention_2', type=bool, default=False, help='whether to use flash attention 2')
     parser.add_argument('--quantization', type=str, default=None, help='The method used to load quantized the model. If use quantized model, please set quantization method, e.g. AWQ, gptq etc.')
     parser.add_argument('--gpu_memory_utilization', type=float, default=0.9, help='GPU memory utilization')
     parser.add_argument('--temperature', type=float, default=0.95, help='LLM inference sampling params')

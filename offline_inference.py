@@ -14,7 +14,12 @@ class Offline_Inference:
             bnb_4bit_quant_type="nf4",
             bnb_4bit_compute_dtype=args.dtype,
         )
-        self.llm = AutoModelForCausalLM.from_pretrained(args.model, quantization_config=quantization_config, device_map="auto")
+        model_kwargs = dict(
+            use_flash_attention_2=args.use_flash_attention_2,
+            torch_dtype="auto",
+            quantization_config=quantization_config,
+        )
+        self.llm = AutoModelForCausalLM.from_pretrained(args.model, **model_kwargs)
         self.tokenizer = AutoTokenizer.from_pretrained(args.model)
         
         # Create a pipeline for text generation
