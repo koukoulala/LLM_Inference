@@ -1,6 +1,7 @@
 import json
 import pandas as pd
-from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, pipeline
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, pipeline, GenerationConfig
+from peft import PeftModel
 import time
 import os
 
@@ -20,15 +21,23 @@ class Offline_Inference:
             quantization_config=quantization_config,
         )
         self.llm = AutoModelForCausalLM.from_pretrained(args.model, **model_kwargs)
+        if args.enable_lora:
+            self.llm = PeftModel.from_pretrained(self.llm, args.lora_modules)
         self.tokenizer = AutoTokenizer.from_pretrained(args.model)
         
         # Create a pipeline for text generation
-        self.llm_pipeline = pipeline("text-generation", model=self.llm, tokenizer=self.tokenizer, batch_size = args.batch_size)
+        config = GenerationConfig(
+            do_sample=True,
+            temperature=args.temperature,
+            max_new_tokens=args.max_tokens,
+            top_p=args.top_p,
+        )
+        self.llm_pipeline = pipeline("text-generation", model=self.llm, tokenizer=self.tokenizer, batch_size = args.batch_size, generation_config=config)
 
     def batch_inference(self, args, prompt_list, RowId_list, fw, time_token_results):
         try:
             t0 = time.perf_counter()
-            outputs = self.llm_pipeline(prompt_list, do_sample=True, max_new_tokens=args.max_tokens, temperature=args.temperature, top_p=args.top_p)
+            outputs = self.llm_pipeline(prompt_list)
             t1 = time.perf_counter()
         except Exception as e:
             print(f"Error: {e}")
