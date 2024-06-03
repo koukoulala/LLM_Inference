@@ -8,7 +8,8 @@ import os
 class Offline_Inference:
 
     def __init__(self, args):
-        print("Initializing Offline Inference with Transformers pipeline, which cannot load Lora modules.")
+        print("Initializing Offline Inference with Transformers pipeline.")
+        print("args:", args)
         # specify how to quantize the model
         quantization_config = BitsAndBytesConfig(
             load_in_4bit=True,
@@ -27,6 +28,7 @@ class Offline_Inference:
         
         # Create a pipeline for text generation
         self.llm_pipeline = pipeline("text-generation", model=self.llm, tokenizer=self.tokenizer, batch_size = args.batch_size)
+        self.llm_pipeline.tokenizer.pad_token_id = self.llm.config.eos_token_id
 
     def batch_inference(self, args, prompt_list, RowId_list, fw, time_token_results):
         try:
@@ -63,7 +65,10 @@ class Offline_Inference:
             prompt_data = json.loads(line.strip())
             RowId = prompt_data["RowId"]
             prompt_text = prompt_data["prompt"]
-            message = [{"role": "user", "content": prompt_text}]
+            if args.add_system_role:
+                message = [{"role": "system", "content": ""}, {"role": "user", "content": prompt_text}]
+            else:
+                message = [{"role": "user", "content": prompt_text}]
             RowId_list.append(RowId)
             prompt_list.append(message)
 

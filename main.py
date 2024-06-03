@@ -15,7 +15,8 @@ def init_parse():
     parser.add_argument('--input_file', type=str, required=True, help='input data path')
     parser.add_argument('--output_dir', type=str, required=True, help='output data dir path')
     parser.add_argument('--output_file_name', type=str, default="generate_response.tsv", help='output data file name')
-
+    parser.add_argument('--add_system_role', action='store_true', help='add system role in the prompt')
+    
     '''choose a mode'''
     parser.add_argument('--infer_type', choices=['offline', 'api_create', 'api_infer'], default='offline', help='please set a mode in [offline], [api_create] and [api_inference]')
     parser.add_argument('--port', type=int, default=7890, help='api port (only for vllm)')
