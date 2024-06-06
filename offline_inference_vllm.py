@@ -8,6 +8,8 @@ import os
 class Offline_Inference:
 
     def __init__(self, args):
+        print("Initializing Offline Inference with VLLM.")
+        print("args:", args)
         cuda_visible_devices = os.environ.get('CUDA_VISIBLE_DEVICES', '')
         if cuda_visible_devices:
             tensor_parallel_size = len(cuda_visible_devices.split(','))
@@ -60,6 +62,12 @@ class Offline_Inference:
         for idx, prompt_data in enumerate(data):
             if idx % 100 == 0:
                 print(f"Processing {idx}th text")
+                test_prompt = prompt_data["prompt"]
+                print(f"test_prompt: {test_prompt}")
+                tokenizer = self.llm.get_tokenizer()
+                encoded_input = tokenizer.encode(test_prompt, add_special_tokens=True)
+                decoded_text = tokenizer.decode(encoded_input)
+                print(f"decoded_text: {decoded_text}")
             RowId = prompt_data["RowId"]
             prompt_text = prompt_data["prompt"]
             RowId_list.append(RowId)

@@ -1,3 +1,4 @@
 transformers>=4.37.2
 vllm
 bitsandbytes>=0.39.0
+aiofiles
