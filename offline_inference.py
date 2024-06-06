@@ -52,6 +52,7 @@ class Offline_Inference:
         return time_token_results
     
     def run(self, args):
+        t0_all = time.perf_counter()
         os.makedirs(args.output_dir, exist_ok=True)
         fw = open(os.path.join(args.output_dir, args.output_file_name), 'w', encoding='utf8')
         time_token_results = []
@@ -86,4 +87,6 @@ class Offline_Inference:
         print(f"Average time to complete texts: {df.time.sum() / total_line: .3f}")
 
         print("Inference completed")
+        t1_all = time.perf_counter()
+        print(f"Total time for processing all data: {t1_all - t0_all: .3f}")
             

@@ -31,31 +31,35 @@ class Offline_Inference:
         except Exception as e:
             print(f"Error: {e}")
             return time_token_results
-        tokens_generated = 0
         for out_idx, output in enumerate(outputs):
             RowId = RowId_list[out_idx]
             generated_text = output.outputs[0].text
-            tokens_generated += len(output.outputs[0].token_ids)
             fw.write(json.dumps({'RowId': RowId, 'response': generated_text}, ensure_ascii=False) + '\n')
 
         time_token_results.append(
-            {"time": t1 - t0, "tokens_generated": tokens_generated}
+            {"time": t1 - t0}
         )
 
         return time_token_results
     
     def run(self, args):
+        t0_all = time.perf_counter()
         os.makedirs(args.output_dir, exist_ok=True)
         fw = open(os.path.join(args.output_dir, args.output_file_name), 'w', encoding='utf8')
+
+        # Read all data into memory
+        with open(args.input_file, 'r', encoding='utf8') as f:
+            data = [json.loads(line.strip()) for line in f]
+
+        total_line = len(data)
+        print(f"Total number of texts: {total_line}")
+
         time_token_results = []
         RowId_list = []
         prompt_list = []
-        total_line = 0
-        for idx, line in enumerate(open(args.input_file, 'r', encoding='utf8')):
+        for idx, prompt_data in enumerate(data):
             if idx % 100 == 0:
                 print(f"Processing {idx}th text")
-            total_line += 1
-            prompt_data = json.loads(line.strip())
             RowId = prompt_data["RowId"]
             prompt_text = prompt_data["prompt"]
             RowId_list.append(RowId)
@@ -73,8 +77,8 @@ class Offline_Inference:
         print(f"Total number of texts: {total_line}")
         df = pd.DataFrame(time_token_results)
         print(f"Average time to complete texts: {df.time.sum() / total_line: .3f}")
-        df["tokens_per_sec"] = df.tokens_generated / df.time
-        print(f"Average tokens/sec: {df.tokens_per_sec.mean(): .3f}")
 
         print("Inference completed")
+        t1_all = time.perf_counter()
+        print(f"Total time for processing all data: {t1_all - t0_all: .3f}")
             
