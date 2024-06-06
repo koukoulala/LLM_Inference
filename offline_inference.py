@@ -55,15 +55,21 @@ class Offline_Inference:
         t0_all = time.perf_counter()
         os.makedirs(args.output_dir, exist_ok=True)
         fw = open(os.path.join(args.output_dir, args.output_file_name), 'w', encoding='utf8')
+
+        # Read all data into memory
+        with open(args.input_file, 'r', encoding='utf8') as f:
+            data = [json.loads(line.strip()) for line in f]
+
+        total_line = len(data)
+        print(f"Total number of texts: {total_line}")
+
         time_token_results = []
         RowId_list = []
         prompt_list = []
-        total_line = 0
-        for idx, line in enumerate(open(args.input_file, 'r', encoding='utf8')):
+        for idx, prompt_data in enumerate(data):
             if idx % 100 == 0:
                 print(f"Processing {idx}th text")
             total_line += 1
-            prompt_data = json.loads(line.strip())
             RowId = prompt_data["RowId"]
             prompt_text = prompt_data["prompt"]
             if args.add_system_role:

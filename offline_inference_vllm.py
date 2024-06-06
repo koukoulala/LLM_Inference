@@ -1,7 +1,8 @@
 import json
 import pandas as pd
-from vllm import LLM, SamplingParams
+from vllm import LLM, SamplingParams, EngineArgs, LLMEngine
 from vllm.lora.request import LoRARequest
+from transformers import AutoTokenizer
 import time
 import os
 
@@ -20,7 +21,7 @@ class Offline_Inference:
         self.llm = LLM(model=args.model, quantization=args.quantization,
                        tensor_parallel_size=tensor_parallel_size, gpu_memory_utilization=args.gpu_memory_utilization,
                        dtype=args.dtype, enable_lora=args.enable_lora)
-        self.sampling_params = SamplingParams(temperature=args.temperature, top_p=args.top_p, max_tokens=args.max_tokens)
+        self.sampling_params = SamplingParams(temperature=args.temperature, top_p=args.top_p, max_tokens=args.max_tokens, repetition_penalty=args.repetition_penalty)
 
     def batch_inference(self, args, prompt_list, RowId_list, fw, time_token_results):
         try:
@@ -62,12 +63,6 @@ class Offline_Inference:
         for idx, prompt_data in enumerate(data):
             if idx % 100 == 0:
                 print(f"Processing {idx}th text")
-                test_prompt = prompt_data["prompt"]
-                print(f"test_prompt: {test_prompt}")
-                tokenizer = self.llm.get_tokenizer()
-                encoded_input = tokenizer.encode(test_prompt, add_special_tokens=True)
-                decoded_text = tokenizer.decode(encoded_input)
-                print(f"decoded_text: {decoded_text}")
             RowId = prompt_data["RowId"]
             prompt_text = prompt_data["prompt"]
             RowId_list.append(RowId)

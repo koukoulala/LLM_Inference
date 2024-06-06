@@ -28,6 +28,7 @@ def init_parse():
     parser.add_argument('--top_p', type=float, default=0.7, help='LLM inference sampling params')
     parser.add_argument('--batch_size', type=int, default=1, help='offline inference batch size')
     parser.add_argument('--max_tokens', type=int, default=500, help='max length of generated text')
+    parser.add_argument('--repetition_penalty', type=float, default=1.0, help='To control the repetition of tokens in the generated text, the higher the value, the less repetition')
 
     '''params using in vllm inference procedure'''
     parser.add_argument('--quantization', type=str, default=None, help='The method used to load quantized the model. If use quantized model, please set quantization method, e.g. AWQ, gptq etc.')
