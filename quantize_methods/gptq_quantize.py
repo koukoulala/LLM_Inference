@@ -4,12 +4,14 @@ import torch
 import logging
 import json
 
-#model_path = '/data/xiaoyukou/LLM_Inference/output/Mistral-7B-sft-fsdp-qlora-2/'
-#quant_path = '/data/xiaoyukou/LLM_Inference/output/Mistral-7B-sft-fsdp-qlora-2-gptq/'
+model_path = '/data/xiaoyukou/LLM_Inference/output/Mistral-7B-sft-fsdp-qlora-3/'
+quant_path = '/data/xiaoyukou/LLM_Inference/output/Mistral-7B-sft-fsdp-qlora-3-gptq/'
 #model_path = '/data/xiaoyukou/LLM_Inference/output/Mistral-7B-orpo/'
 #quant_path = '/data/xiaoyukou/LLM_Inference/output/Mistral-7B-orpo-gptq/'
-model_path = '/data/xiaoyukou/LLM_Inference/output/Mistral-7B-orpo-2/'
-quant_path = '/data/xiaoyukou/LLM_Inference/output/Mistral-7B-orpo-2-gptq/'
+#model_path = '/data/xiaoyukou/LLM_Inference/output/Mistral-7B-orpo-2/'
+#quant_path = '/data/xiaoyukou/LLM_Inference/output/Mistral-7B-orpo-2-gptq/'
+#model_path = '/data/xiaoyukou/LLM_Inference/output/Phi-3-fsdp-qlora/'
+#quant_path = '/data/xiaoyukou/LLM_Inference/output/Phi-3-fsdp-qlora-gptq/'
 quantize_config = BaseQuantizeConfig(
     bits=4, # 4 or 8
     group_size=128,
