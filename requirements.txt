@@ -4,5 +4,5 @@ vllm==0.4.2
 bitsandbytes==0.43.1
 aiofiles==23.2.1
 torch==2.3.0
-flash_attn==2.5.8
+#flash_attn==2.5.8
 auto_gptq==0.7.1
