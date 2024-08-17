@@ -6,9 +6,6 @@ import json
 import argparse
 
 def quantize(model_path, quant_path, test_data):
-
-    #model_path = '/data/xiaoyukou/LLM_Inference/output/Mistral-7B-orpo-2/'
-    #quant_path = '/data/xiaoyukou/LLM_Inference/output/Mistral-7B-orpo-2-gptq/'
     quantize_config = BaseQuantizeConfig(
         bits=4, # 4 or 8
         group_size=128,

@@ -4,3 +4,4 @@ bitsandbytes==0.43.1
 aiofiles==24.1.0
 torch==2.3.0
 flash_attn==2.5.9.post1
+auto_gptq==0.7.1
