@@ -43,7 +43,6 @@ class Offline_Inference:
     
     def run(self, args):
         t0_all = time.perf_counter()
-        os.makedirs(args.output_dir, exist_ok=True)
         fw = open(os.path.join(args.output_file), 'w', encoding='utf8')
 
         # Read all data into memory
@@ -104,4 +103,5 @@ if __name__=='__main__':
 
     args = parser.parse_args()
     offline_infer = Offline_Inference(args)
+    offline_infer.run(args)
             
