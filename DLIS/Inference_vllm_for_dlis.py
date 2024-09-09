@@ -1,10 +1,9 @@
 import json
 import pandas as pd
-from vllm import LLM, SamplingParams, EngineArgs, LLMEngine
-from vllm.lora.request import LoRARequest
-from transformers import AutoTokenizer
+from vllm import LLM, SamplingParams
 import time
 import os
+import argparse
 
 class Offline_Inference:
 
@@ -20,16 +19,13 @@ class Offline_Inference:
 
         self.llm = LLM(model=args.model, quantization=args.quantization,
                        tensor_parallel_size=tensor_parallel_size, gpu_memory_utilization=args.gpu_memory_utilization,
-                       dtype=args.dtype, enable_lora=args.enable_lora)
+                       dtype=args.dtype)
         self.sampling_params = SamplingParams(temperature=args.temperature, top_p=args.top_p, max_tokens=args.max_tokens, repetition_penalty=args.repetition_penalty)
 
     def batch_inference(self, args, prompt_list, RowId_list, fw, time_token_results):
         try:
             t0 = time.perf_counter()
-            if args.enable_lora:
-                outputs = self.llm.generate(prompt_list, self.sampling_params, lora_request=LoRARequest('lora_adapter', 1, args.lora_modules))
-            else:
-                outputs = self.llm.generate(prompt_list, self.sampling_params)
+            outputs = self.llm.generate(prompt_list, self.sampling_params)
             t1 = time.perf_counter()
         except Exception as e:
             print(f"Error: {e}")
@@ -48,7 +44,7 @@ class Offline_Inference:
     def run(self, args):
         t0_all = time.perf_counter()
         os.makedirs(args.output_dir, exist_ok=True)
-        fw = open(os.path.join(args.output_dir, args.output_file_name), 'w', encoding='utf8')
+        fw = open(os.path.join(args.output_file), 'w', encoding='utf8')
 
         # Read all data into memory
         with open(args.input_file, 'r', encoding='utf8') as f:
@@ -84,4 +80,28 @@ class Offline_Inference:
         print("Inference completed")
         t1_all = time.perf_counter()
         print(f"Total time for processing all data: {t1_all - t0_all: .3f}")
+
+
+
+if __name__=='__main__':
+    parser = argparse.ArgumentParser(description='LLM inference')
+
+    parser.add_argument('--model', type=str, required=True, help='LLM base model path')
+    parser.add_argument('--input_file', type=str, required=True, help='input data path')
+    parser.add_argument('--output_file', type=str, required=True, help='output data path')
+    parser.add_argument('--dtype', choices=['auto', 'float32', 'float16', 'bfloat16'], default='float16', help='data type for the model weights and activations')
+    parser.add_argument('--use_flash_attention_2', type=bool, default=False, help='whether to use flash attention 2')
+    parser.add_argument('--temperature', type=float, default=0.95, help='LLM inference sampling params')
+    parser.add_argument('--top_p', type=float, default=0.7, help='LLM inference sampling params')
+    parser.add_argument('--batch_size', type=int, default=16, help='offline inference batch size')
+    parser.add_argument('--max_tokens', type=int, default=500, help='max length of generated text')
+    parser.add_argument('--repetition_penalty', type=float, default=1.0, help='To control the repetition of tokens in the generated text, the higher the value, the less repetition')
+
+    '''params using in vllm inference procedure'''
+    parser.add_argument('--quantization', type=str, default=None, help='The method used to load quantized the model. If use quantized model, please set quantization method, e.g. AWQ, gptq etc.')
+    parser.add_argument('--gpu_memory_utilization', type=float, default=0.9, help='GPU memory utilization')
+    
+
+    args = parser.parse_args()
+    offline_infer = Offline_Inference(args)
             
