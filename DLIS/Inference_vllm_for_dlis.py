@@ -19,13 +19,12 @@ class ModelImp:
         print(f"Number of GPUs specified by CUDA_VISIBLE_DEVICES: {tensor_parallel_size}")
 
         self.llm = LLM(model=args.model, quantization=args.quantization,
-                       tensor_parallel_size=tensor_parallel_size, gpu_memory_utilization=args.gpu_memory_utilization,
-                       dtype=args.dtype)
+                       tensor_parallel_size=tensor_parallel_size, gpu_memory_utilization=args.gpu_memory_utilization, dtype=args.dtype)
         self.sampling_params = SamplingParams(temperature=args.temperature, top_p=args.top_p, max_tokens=args.max_tokens, repetition_penalty=args.repetition_penalty)
 
     def EvalBatch(self, prompt_list):
 
-        #prompt_list = ["[INST] " + prompt_text + " [/INST]" for prompt_text in prompt_list]
+        prompt_list = ["[INST] " + prompt_text + " [/INST]" for prompt_text in prompt_list]
 
         outputs = self.llm.generate(prompt_list, self.sampling_params)
 
@@ -74,12 +73,12 @@ if __name__=='__main__':
                  "Please generate 8 Ad Headline in English language, based on the following information:\\n\\nFinalUrl: http://alpersteinanddiener.mydex.com/wOah6yUkFuY \\nLandingPage:   . Dex Media Reverse Proxy;;; . INVALID Reverse Proxy URL ACCESS! . (Failed to decryptSymmetric click id!); \\nCharacterLimit:  between 10 to 30 characters. \\nInsight: Generate similar ad for the existing ad <We'll Protect Your Rights>.\\n",
                  "Please generate 4 Ad Description in Dutch language, based on the following information:\\n\\nFinalUrl: http://apenheul.nl/apenheul30 \\nLandingPage:   . Apenheul tickets - Apenheul; . Kinderkaartjes online €15; . Winkelmandje; . Welkom in onze webshop! Bestel hier je tickets voor het leukste dagje uit tussen de apen. Online krijg je per ticket tot wel €7,50 korting op de kassaprijs. En deze zomervakantie bestel je jouw kinderkaartjes voor maar €15! Per bestelling wordt €0,65 administratiekosten in rekening gebracht. . Maak een keuze voor een da \\nCharacterLimit:  between 60 to 90 characters. \\nInsight: Generate similar ad for the existing ad <De nieuwe gorillaleider Banjoko ontmoeten. Nu tickets met 30% korting online.>.\\n"
     ]
-
-    test_data = [json.dumps(data.strip()) for data in test_data]
+    
+    test_data = [data.strip() for data in test_data]
 
     test = ModelImp(args)
-    print(test.EvalBatch(test_data))
-    '''
+    #print(test.EvalBatch(test_data))
+    
     for data in test_data:
         #print('Input: '+ data)
         start_time = time.time()
@@ -87,5 +86,5 @@ if __name__=='__main__':
         end_time = time.time()
         print('inference time: '+ str(end_time - start_time))
         print('\n')
-    '''
+    
             
