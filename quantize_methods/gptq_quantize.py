@@ -69,8 +69,8 @@ def quantize(model_path, quant_path, test_data):
 # write a main function with arguments
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model_path", type=str, default="/data/xiaoyukou/LLM_Inference/output/Mistral-7B-orpo-2/", help="The path of the original model.")
-    parser.add_argument("--quant_path", type=str, default="/data/xiaoyukou/LLM_Inference/output/Mistral-7B-orpo-2-gptq/", help="The path to save the quantized model.")
+    parser.add_argument("--model_path", type=str, default="/data/xiaoyukou/LLM_Inference/output/Mistral-7B-sft-add-copilot/", help="The path of the original model.")
+    parser.add_argument("--quant_path", type=str, default="/data/xiaoyukou/LLM_Inference/output/Mistral-7B-sft-add-copilot-gptq-2/", help="The path to save the quantized model.")
     parser.add_argument("--test_data", type=str, default="/data/xiaoyukou/LLM_Inference/data/small_test.json", help="The path of the test data.")
     args = parser.parse_args()
 

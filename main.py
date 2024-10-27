@@ -7,6 +7,7 @@ def init_parse():
 
     '''LLM model path, set enable-lora True and provide lora modules path if using lora module'''
     parser.add_argument('--model', type=str, required=True, help='LLM base model path')
+    parser.add_argument('--model_name', type=str, default="mistral", help='LLM base model name')
     parser.add_argument('--infer_backend', type=str, default="transformers", choices=['transformers', 'transformers_optimize', 'vllm'], help="Inference backend.")
     parser.add_argument('--enable_lora', action='store_true', help='Enable lora module')
     parser.add_argument('--lora_modules', type=str, help='LLM lora module path')
