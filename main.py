@@ -8,7 +8,7 @@ def init_parse():
     '''LLM model path, set enable-lora True and provide lora modules path if using lora module'''
     parser.add_argument('--model', type=str, required=True, help='LLM base model path')
     parser.add_argument('--model_name', type=str, default="mistral", help='LLM base model name')
-    parser.add_argument('--infer_backend', type=str, default="transformers", choices=['transformers', 'transformers_optimize', 'vllm'], help="Inference backend.")
+    #parser.add_argument('--infer_backend', type=str, default="transformers", choices=['transformers', 'transformers_optimize', 'vllm'], help="Inference backend.")
     parser.add_argument('--enable_lora', action='store_true', help='Enable lora module')
     parser.add_argument('--lora_modules', type=str, help='LLM lora module path')
 
@@ -43,15 +43,8 @@ def init_parse():
 def main():
     args = init_parse()
     if args.infer_type == 'offline':
-        if args.infer_backend == 'transformers':
-            llm_infer = offline_inference.Offline_Inference(args)
-            llm_infer.run(args)
-        elif args.infer_backend == 'transformers_optimize':
-            llm_infer = offline_inference_optimization.Offline_Inference(args)
-            asyncio.run(llm_infer.run(args))
-        elif args.infer_backend == 'vllm':
-            llm_infer = offline_inference_vllm.Offline_Inference(args)
-            llm_infer.run(args)
+        llm_infer = offline_inference_vllm.Offline_Inference(args)
+        llm_infer.run(args)
     elif args.infer_type == 'api_create':
         api_create.API_Create.run(args)
     elif args.infer_type == 'api_infer':

@@ -21,10 +21,19 @@ class ModelImp:
         self.llm = LLM(model=args.model, quantization=args.quantization,
                        tensor_parallel_size=tensor_parallel_size, gpu_memory_utilization=args.gpu_memory_utilization, dtype=args.dtype)
         self.sampling_params = SamplingParams(temperature=args.temperature, top_p=args.top_p, max_tokens=args.max_tokens, repetition_penalty=args.repetition_penalty)
-
+        self.args = args
+    
     def EvalBatch(self, prompt_list):
 
-        prompt_list = ["[INST] " + prompt_text + " [/INST]" for prompt_text in prompt_list]
+        #prompt_list = ["<s>[INST] " + prompt_text + " [/INST]" for prompt_text in prompt_list]
+        mistral_template = '[INST] {} [/INST]'
+        llama3_template = '<|eot_id|><|start_header_id|>user<|end_header_id|>\n\n{}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n' 
+        if self.args.model_name == 'mistral':
+            prompt_list = [mistral_template.format(prompt_text) for prompt_text in prompt_list]
+        elif self.args.model_name == 'llama3':
+            prompt_list = [llama3_template.format(prompt_text) for prompt_text in prompt_list]
+
+        print('prompt_list:', prompt_list)
 
         outputs = self.llm.generate(prompt_list, self.sampling_params)
 
@@ -43,7 +52,8 @@ if __name__=='__main__':
     parser = argparse.ArgumentParser(description='LLM inference')
 
     parser.add_argument('--model', type=str, required=True, help='LLM base model path')
-    parser.add_argument('--dtype', choices=['auto', 'float32', 'float16', 'bfloat16'], default='float16', help='data type for the model weights and activations')
+    parser.add_argument('--model_name', type=str, default="mistral", help='LLM base model name')
+    parser.add_argument('--dtype', choices=['auto', 'float32', 'float16', 'bfloat16'], default='auto', help='data type for the model weights and activations')
     parser.add_argument('--use_flash_attention_2', type=bool, default=True, help='whether to use flash attention 2')
     parser.add_argument('--temperature', type=float, default=0.95, help='LLM inference sampling params')
     parser.add_argument('--top_p', type=float, default=0.7, help='LLM inference sampling params')
@@ -85,7 +95,7 @@ if __name__=='__main__':
                  "Please generate 4 Ad Description in Dutch language, based on the following information:\\n\\nFinalUrl: http://apenheul.nl/apenheul30 \\nLandingPage:   . Apenheul tickets - Apenheul; . Kinderkaartjes online €15; . Winkelmandje; . Welkom in onze webshop! Bestel hier je tickets voor het leukste dagje uit tussen de apen. Online krijg je per ticket tot wel €7,50 korting op de kassaprijs. En deze zomervakantie bestel je jouw kinderkaartjes voor maar €15! Per bestelling wordt €0,65 administratiekosten in rekening gebracht. . Maak een keuze voor een da \\nCharacterLimit:  between 60 to 90 characters. \\nInsight: Generate similar ad for the existing ad <De nieuwe gorillaleider Banjoko ontmoeten. Nu tickets met 30% korting online.>.\\n",
                  "Please generate 5 Ad Headline in English language, based on the following information:\\n\\nFinalUrl: http://WowPartyRental.com \\nCharacterLimit:  between 10 to 30 characters. \\nInsight: Incorporate dynamic keyword insertion to make your ad more relevant to query.\\n", 
     ]
-    '''
+    
     test_data = ["Please generate 5 Ad Description in English language, based on the following information:\nFinalUrl: https://example.com/ \nCharacterLimit: between 71 to 90 characters. \nInsight: Rewrite the existing ad <Try Advanced Digital Hearing Aids Made for You. Start Your Journey Today.> based on the requirement <sasdasd>. \n",
                  "Please generate 3 Ad Description in Spanish language, based on the following information:\nFinalUrl: https://www.homedepot.com.mx/ \nCharacterLimit: between 64 to 90 characters. \nInsight: Rewrite the existing ad <Envío gratis desde $499 en línea - Redescubre tus espacios con las mejores marcas> based on the requirement <productos para todo el hogar>. \n",
                  "Please generate 8 Ad Headline in English language, based on the following information:\nFinalUrl: https://www.birakit.com/services/hometelephones.php \nCharacterLimit: between 10 to 30 characters. \nInsight: Rewrite the existing ad <Get VOIP Home> based on the requirement <providing voip telephone services for home use>. \n",
@@ -95,9 +105,11 @@ if __name__=='__main__':
                  "Please generate 8 Ad Headline in English language, based on the following information:\nFinalUrl: https://www.computeroisd.com \nCharacterLimit: between 10 to 30 characters. \nInsight: Promote the selling point: <Boost PC performance> and reflect the highlight information: <Printer and Driver update tool>. \n",
                  "Please generate 5 Ad Description in English language, based on the following information:\nFinalUrl: https://shirtmellow.com/ \nCharacterLimit: between 56 to 90 characters. \nInsight: Promote the selling point: <Comfy T-shirts> and reflect the highlight information: <t shirt sale>. \n",
                  "Please generate 3 Ad Description in Simplified Chinese language, based on the following information:\nFinalUrl: https://www.fasoft.cn \nLandingPage:  . 金甲U盘文件加密;  . 金甲企业数据加密软件，保护企业数据安全，对Windows平台下任意格式的文件... . 金甲U盘加密软件把普通U盘改造成打开文件的的Key，>达到控制授权文档的阅读...;  . 武汉市风奥科技股份有限公司—中国数据防泄漏领域的专家。文件加密,加密软件,文档加密,数据加密,视频加密、文件夹加密软件、企业加密软件首选品牌，风奥科技是国内最早的文件加密软件厂商,拥有遍>布全国和部分海外地区的企业级用户,迄今每天有数百万台终端使用风奥的软件产品进行安全控制.全国热线：027-87409509 \nCharacterLimit: between 26 to 90 characters. \nInsight: Promote the selling point: <申请试用> and reflect the highlight information: <加密软件排名>. \n"
+    ]
+    '''
+    test_data = ["who are you?"
 
     ]
-    
     
     test_data = [data.strip() for data in test_data]
 
