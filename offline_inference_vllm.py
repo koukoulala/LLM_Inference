@@ -24,7 +24,7 @@ class Offline_Inference:
         self.sampling_params = SamplingParams(temperature=args.temperature, top_p=args.top_p, max_tokens=args.max_tokens, repetition_penalty=args.repetition_penalty)
 
     def batch_inference(self, args, prompt_list, RowId_list, fw, time_token_results):
-        print("\nprompt_list: ", prompt_list)
+        #print("\nprompt_list: ", prompt_list)
         try:
             t0 = time.perf_counter()
             if args.enable_lora:
@@ -62,7 +62,7 @@ class Offline_Inference:
         RowId_list = []
         prompt_list = []
         for idx, prompt_data in enumerate(data):
-            if idx % 100 == 0:
+            if idx % 500 == 0:
                 print(f"Processing {idx}th text")
             RowId = prompt_data["RowId"]
             #prompt_text = "[INST] " + prompt_data["prompt"] + " [/INST]"
