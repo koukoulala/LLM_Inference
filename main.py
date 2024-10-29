@@ -1,5 +1,5 @@
 import argparse
-import offline_inference, api_create, api_inference, offline_inference_vllm, offline_inference_optimization
+import api_create, api_inference, offline_inference_vllm
 import asyncio
 
 def init_parse():
