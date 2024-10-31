@@ -60,7 +60,7 @@ def quantize(model_path, quant_path, test_data):
 
     # Quantize
     #model.quantize(data, cache_examples_on_gpu=False)
-    model.quantize(data, cache_examples_on_gpu=2, batch_size=2, use_triton=True)
+    model.quantize(data, cache_examples_on_gpu=20, batch_size=20, use_triton=True)
 
     # Save quantized model
     model.save_quantized(quant_path, use_safetensors=True)
