@@ -1,3 +1,12 @@
+import os
+max_cpu_threads = "14"
+os.environ["OMP_NUM_THREADS"] = max_cpu_threads
+os.environ["OPENBLAS_NUM_THREADS"] = max_cpu_threads
+os.environ["MKL_NUM_THREADS"] = max_cpu_threads
+os.environ["VECLIB_MAXIMUM_THREADS"] = max_cpu_threads
+os.environ["NUMEXPR_NUM_THREADS"] = max_cpu_threads
+os.environ["NUMEXPR_MAX_THREADS"] = max_cpu_threads
+
 from auto_gptq import AutoGPTQForCausalLM, BaseQuantizeConfig
 from transformers import AutoTokenizer
 import torch
