@@ -48,7 +48,6 @@ def quantize(model_path, quant_path, test_data):
     for RowId, data in enumerate(test_data):
         prompt = data["instruction"] + "\n" + data["input"]
         tmp_message = [
-            {"role": "system", "content": ""},
             {"role": "user", "content": prompt},
             {"role": "assistant", "content": data["output"]}
         ]
