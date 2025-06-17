@@ -3,10 +3,5 @@ vllm==0.6.3.post1
 bitsandbytes==0.46.0
 aiofiles==24.1.0
 flash_attn==2.5.9.post1
-<<<<<<< HEAD
-peft==0.10.0
-mistral_common==1.4.4
-=======
 peft==0.15.2
 deepspeed==0.16.5
->>>>>>> 48eb667d829d1767f744fe4e7766b72d23ef7c09
