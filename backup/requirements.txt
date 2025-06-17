@@ -1,0 +1,6 @@
+transformers==4.45.2
+vllm==0.6.3.post1
+bitsandbytes==0.43.1
+aiofiles==24.1.0
+flash_attn==2.5.9.post1
+peft==0.10.0

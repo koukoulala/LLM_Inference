@@ -14,7 +14,7 @@ import logging
 import json
 import argparse
 
-def quantize(model_path, quant_path, test_data):
+def quantize(model_path, quant_path, test_data, model_name="mistral"):
     quantize_config = BaseQuantizeConfig(
         bits=4, # 4 or 8
         group_size=128,
@@ -47,11 +47,17 @@ def quantize(model_path, quant_path, test_data):
 
     for RowId, data in enumerate(test_data):
         prompt = data["instruction"] + "\n" + data["input"]
-        tmp_message = [
-            {"role": "system", "content": ""},
-            {"role": "user", "content": prompt},
-            {"role": "assistant", "content": data["output"]}
-        ]
+        if "mistral" in model_name.lower():
+            tmp_message = [
+                {"role": "user", "content": prompt},
+                {"role": "assistant", "content": data["output"]}
+            ]
+        else:
+            tmp_message = [
+                {"role": "system", "content": ""},
+                {"role": "user", "content": prompt},
+                {"role": "assistant", "content": data["output"]}
+            ]
         messages.append(tmp_message)
     print("count of messages: ", len(messages))
     print("messages examples: ", messages[:2])
@@ -69,7 +75,8 @@ def quantize(model_path, quant_path, test_data):
 
     # Quantize
     #model.quantize(data, cache_examples_on_gpu=False)
-    model.quantize(data, cache_examples_on_gpu=20, batch_size=20, use_triton=True)
+    #model.quantize(data, cache_examples_on_gpu=20, batch_size=20, use_triton=True)
+    model.quantize(data, cache_examples_on_gpu=20, batch_size=20)
 
     # Save quantized model
     model.save_quantized(quant_path, use_safetensors=True)
@@ -82,6 +89,7 @@ if __name__ == "__main__":
     parser.add_argument("--model_path", type=str, default="/data/xiaoyukou/LLM_Inference/output/Mistral-7B-sft-add-copilot-2/", help="The path of the original model.")
     parser.add_argument("--quant_path", type=str, default="/data/xiaoyukou/LLM_Inference/output/Mistral-7B-sft-add-copilot-gptq-2/", help="The path to save the quantized model.")
     parser.add_argument("--test_data", type=str, default="/data/xiaoyukou/LLM_Inference/data/small_test.json", help="The path of the test data.")
+    parser.add_argument("--model_name", type=str, default="mistral", help="The name of the model.")
     args = parser.parse_args()
 
     quantize(args.model_path, args.quant_path, args.test_data)
