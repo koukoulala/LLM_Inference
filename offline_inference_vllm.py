@@ -65,8 +65,8 @@ class Offline_Inference:
             if idx % 500 == 0:
                 print(f"Processing {idx}th text")
             RowId = prompt_data["RowId"]
-            #prompt_text = "[INST] " + prompt_data["prompt"] + " [/INST]"
-            prompt_text = prompt_data["prompt"]
+            prompt_text = "[INST] " + prompt_data["prompt"] + " [/INST]"
+            #prompt_text = prompt_data["prompt"]
             RowId_list.append(RowId)
             prompt_list.append(prompt_text)
 
