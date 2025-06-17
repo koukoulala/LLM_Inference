@@ -14,6 +14,11 @@ import logging
 import json
 import argparse
 
+# Fix the error: TypeError: argument of type 'NoneType' is not iterable
+from transformers import modeling_utils
+if not hasattr(modeling_utils, "ALL_PARALLEL_STYLES") or modeling_utils.ALL_PARALLEL_STYLES is None:
+    modeling_utils.ALL_PARALLEL_STYLES = ["tp", "none","colwise",'rowwise']
+
 def quantize(model_path, quant_path, test_data, model_name="mistral"):
     quantize_config = BaseQuantizeConfig(
         bits=4, # 4 or 8
