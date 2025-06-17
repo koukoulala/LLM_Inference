@@ -44,7 +44,7 @@ def main():
     args = init_parse()
     if args.infer_type == 'offline':
         if "qwen" in args.model_name.lower():
-            llm_infer = offline_inference_vllm_qwen.Offline_Inference_Qwen(args)
+            llm_infer = offline_inference_vllm_qwen.Offline_Inference(args)
         else:
             llm_infer = offline_inference_vllm.Offline_Inference(args)
         llm_infer.run(args)
