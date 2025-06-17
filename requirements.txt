@@ -4,3 +4,4 @@ bitsandbytes==0.43.1
 aiofiles==24.1.0
 flash_attn==2.5.9.post1
 peft==0.10.0
+mistral_common==1.4.4
