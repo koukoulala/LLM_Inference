@@ -68,7 +68,7 @@ class Offline_Inference:
             RowId = prompt_data["RowId"]
             #prompt_text = "[INST] " + prompt_data["prompt"] + " [/INST]"
             prompt_text = prompt_data["prompt"]
-            messages = [{"role": "user", "content": prompt}]
+            messages = [{"role": "user", "content": prompt_text}]
 
             RowId_list.append(RowId)
             prompt_list.append(messages)
