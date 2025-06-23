@@ -1,5 +1,5 @@
 import argparse
-import api_create, api_inference, offline_inference_vllm
+import api_create, api_inference, offline_inference_vllm, offline_inference_vllm_qwen
 import asyncio
 
 def init_parse():
@@ -43,7 +43,10 @@ def init_parse():
 def main():
     args = init_parse()
     if args.infer_type == 'offline':
-        llm_infer = offline_inference_vllm.Offline_Inference(args)
+        if "qwen" in args.model_name.lower():
+            llm_infer = offline_inference_vllm_qwen.Offline_Inference(args)
+        else:
+            llm_infer = offline_inference_vllm.Offline_Inference(args)
         llm_infer.run(args)
     elif args.infer_type == 'api_create':
         api_create.API_Create.run(args)

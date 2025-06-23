@@ -27,10 +27,11 @@ class Offline_Inference:
         #print("\nprompt_list: ", prompt_list)
         try:
             t0 = time.perf_counter()
-            if args.enable_lora:
-                outputs = self.llm.generate(prompt_list, self.sampling_params, lora_request=LoRARequest('lora_adapter', 1, args.lora_modules))
-            else:
-                outputs = self.llm.generate(prompt_list, self.sampling_params)
+            outputs = self.llm.chat(
+                prompt_list, 
+                self.sampling_params,
+                chat_template_kwargs={"enable_thinking": False},  # Set to False to strictly disable thinking
+                )
             t1 = time.perf_counter()
         except Exception as e:
             print(f"Error: {e}")
@@ -65,10 +66,12 @@ class Offline_Inference:
             if idx % 500 == 0:
                 print(f"Processing {idx}th text")
             RowId = prompt_data["RowId"]
-            prompt_text = "[INST] " + prompt_data["prompt"] + " [/INST]"
-            #prompt_text = prompt_data["prompt"]
+            #prompt_text = "[INST] " + prompt_data["prompt"] + " [/INST]"
+            prompt_text = prompt_data["prompt"]
+            messages = [{"role": "user", "content": prompt_text}]
+
             RowId_list.append(RowId)
-            prompt_list.append(prompt_text)
+            prompt_list.append(messages)
 
             if ((idx + 1) % args.batch_size) == 0:
                 time_token_results = self.batch_inference(args, prompt_list, RowId_list, fw, time_token_results)
