@@ -1,0 +1,100 @@
+prompts:
+  relevance:
+    system: "You are an expert evaluating the relevance between an image and a landing page (LP)."
+    user: |
+      You are an expert evaluating the relevance between an image and a landing page (LP). For each task, you will see an image, an LP URL that users reach after clicking the ad, and LP content extracted from that URL.
+      
+      ### Rulebook:
+      
+      ### Step 1: Identify the LP type.
+      Determine whether the LP promotes a single product or service, meaning a specific and concrete item such as Nike Air Zoom Pegasus 41 or Airport Valet Parking – Terminal 2, or a collection page containing multiple products or services such as an ecommerce homepage, category page, promotional page, or brand/category search result page.
+      
+      ### Step 2: Assign one label: Good, Fair, or Bad.
+      
+      ### Good: The image is clearly relevant and fully aligned with the LP's content, intent, and key attributes, with no misleading or conflicting elements. Key attributes such as gender, color, time, series, location, and brand must match, and any text in the image must be verifiable from the LP. More specifically, 1） For single products or services, the image directly shows the promoted item with all attributes matching and may include service providers(e.g., wearing uniform or professional attire). 2) For collection LPs, the image should convey the overall LP intent or show a product or service that is included in the LP offerings. 3) For abstract services or concepts, the visual meaning must directly correspond to LP text or imagery, without implying nonexistent capabilities, and the emotional tone must match.
+      
+      Examples: 1) a blue dress image for a blue dress LP 2) a Paris landmark for a Paris travel LP 3) healthcare professionals for a health insurance LP. 4) house roof for roof repair service 5)The LP is about retirement financial services, and the image shows seniors on vacation. This represents an abstract concept where the target audience and scenario are well‑aligned. 6) An image of a house used for a home valuation service.
+      
+      ### Fair: The image is somewhat related but generic, partially aligned, or missing important details. It may reflect a broader concept than the LP's specific focus.
+      
+      1） For single products, services, or collections, the theme aligns but key attributes are missing or too general. 2) For abstract concepts, the image relates to the domain but weakly, without implying false capabilities and with a neutral or professional tone.
+      
+      Examples: 1) a parking sign for an airport parking LP 2) a happy father and son for a children diabetes screening LP 3) a family vacation image for an travel accommodations LP. (theme loosely aligned) 4) The LP focuses on hotel searches in Kilmore Quay supported by Booking, but the image only represents the Booking brand and is very generic. 5) The LP is about filling in a PDF form template, but the image is generic. The man holding a tablet provides only a loose connection to PDF filling. The theme is loosely relevant but not contradictory. 6)The LP is a collection of cat food. The image includes both cat food and dog food, while the broader theme (pet food) is related, it is not fully aligned with the LP's specific focus.
+      
+      ### Bad: The image is irrelevant, misleading, or conflicts with the LP's intent, attributes, or claims. This includes unrelated or competing products, mismatched colors, brands, times, locations, or attributes, or implying features not present on the LP. For abstract concepts, the meaning may be unrelated, misleading, or convey an inappropriate emotional tone.
+      
+      Examples: 1) Adidas shoes for a Nike LP 2) 2023 label when the LP promotes 2024 3) natural scenery for an ecommerce promotion page 4) a concert photo for a city tour LP. 5) merchandise apparel for a harbor cruise service LP. 6) A laptop stand product shown for a laptop‑related LP. 7)Household cleaning tools shown for a computer‑cleaning software LP
+      
+      ### Step 3: Tie‑breaker principle: When multiple labels could apply, choose the lowest level (e.g., if both Good and Fair apply, choose Fair). Focus on logical relevance and attribute consistency, not image aesthetics.
+      
+      ### Chain‑of‑thought guidance: 1) First identify the LP type. 2) Compare the image with the LP theme; if misaligned, label Bad. Dump intermediate conclusion at this step. 3) If aligned, further check attributes such as color, model, brand, location, and verify any image text with the LP. Conflicts or unverifiable text yield Bad. Dump intermediate conclusion at this step. 4) If no issues, judge the level of detail match: exact alignment is Good, broader alignment is Fair. Dump intermediate conclusion at this step. Apply the lowest‑level principle and provide a concise reason referencing signals from both the image and the LP.
+      
+      ## Output Requirements
+      
+      Let's do the judgment step-by-step. First dump your Chain-of-Thought and wrap your thinking within <Think> and </Think>.
+      
+      Then dump the final decision (i.e., Good/Fair/Bad) within <Result> and </Result>.
+      
+      ## Output Example
+      
+      <Think>
+      1. Identifying that the landing page promotes a single service—Paris city tours—based on signals like 'Paris,' 'City Tours,' 'Landmarks,' and '2024' in the LP content.
+      2. Examine the image, 1) check topic relevance: image noting the Eiffel Tower, tourists, and a guide holding a sign, which strongly suggests a tour context. The topic is consistent with LP. (intermediate conclusion: maybe Good or Fair)  2) proceed to check factual consistency: Compare these signals and confirm that the image aligns perfectly with the LP intent, depicting the correct location and service context without any conflicting details. There is no text in the image requiring verification. There is no factual errors, proceed to check granularity. (intermediate conclusion: maybe Good or Fair) 3) The image and LP shows same granularity. Not superset or subset. (intermediate conclusion: Good)
+      3. Conclude that the image meets all criteria for high relevance and assign the label Good.
+      </Think>
+      
+      <Result>Good</Result>
+      
+      Input:
+      Landing Page URL: {FinalUrl}
+      Image URL: {ImgUrl}
+      Landing Page Content: {doc}
+      
+      Output:
+
+  relevance_no_think:
+    system: "You are an expert evaluating the relevance between an image and a landing page (LP)."
+    user: |
+      You are an expert evaluating the relevance between an image and a landing page (LP). For each task, you will see an image, an LP URL that users reach after clicking the ad, and LP content extracted from that URL.
+      
+      ### Rulebook:
+      
+      ### Step 1: Identify the LP type.
+      Determine whether the LP promotes a single product or service, meaning a specific and concrete item such as Nike Air Zoom Pegasus 41 or Airport Valet Parking – Terminal 2, or a collection page containing multiple products or services such as an ecommerce homepage, category page, promotional page, or brand/category search result page.
+      
+      ### Step 2: Assign one label: Good, Fair, or Bad.
+      
+      ### Good: The image is clearly relevant and fully aligned with the LP's content, intent, and key attributes, with no misleading or conflicting elements. Key attributes such as gender, color, time, series, location, and brand must match, and any text in the image must be verifiable from the LP. More specifically, 1） For single products or services, the image directly shows the promoted item with all attributes matching and may include service providers(e.g., wearing uniform or professional attire). 2) For collection LPs, the image should convey the overall LP intent or show a product or service that is included in the LP offerings. 3) For abstract services or concepts, the visual meaning must directly correspond to LP text or imagery, without implying nonexistent capabilities, and the emotional tone must match.
+      
+      Examples: 1) a blue dress image for a blue dress LP 2) a Paris landmark for a Paris travel LP 3) healthcare professionals for a health insurance LP. 4) house roof for roof repair service 5)The LP is about retirement financial services, and the image shows seniors on vacation. This represents an abstract concept where the target audience and scenario are well‑aligned. 6) An image of a house used for a home valuation service.
+      
+      ### Fair: The image is somewhat related but generic, partially aligned, or missing important details. It may reflect a broader concept than the LP's specific focus.
+      
+      1） For single products, services, or collections, the theme aligns but key attributes are missing or too general. 2) For abstract concepts, the image relates to the domain but weakly, without implying false capabilities and with a neutral or professional tone.
+      
+      Examples: 1) a parking sign for an airport parking LP 2) a happy father and son for a children diabetes screening LP 3) a family vacation image for an travel accommodations LP. (theme loosely aligned) 4) The LP focuses on hotel searches in Kilmore Quay supported by Booking, but the image only represents the Booking brand and is very generic. 5) The LP is about filling in a PDF form template, but the image is generic. The man holding a tablet provides only a loose connection to PDF filling. The theme is loosely relevant but not contradictory. 6)The LP is a collection of cat food. The image includes both cat food and dog food, while the broader theme (pet food) is related, it is not fully aligned with the LP's specific focus.
+      
+      ### Bad: The image is irrelevant, misleading, or conflicts with the LP's intent, attributes, or claims. This includes unrelated or competing products, mismatched colors, brands, times, locations, or attributes, or implying features not present on the LP. For abstract concepts, the meaning may be unrelated, misleading, or convey an inappropriate emotional tone.
+      
+      Examples: 1) Adidas shoes for a Nike LP 2) 2023 label when the LP promotes 2024 3) natural scenery for an ecommerce promotion page 4) a concert photo for a city tour LP. 5) merchandise apparel for a harbor cruise service LP. 6) A laptop stand product shown for a laptop‑related LP. 7)Household cleaning tools shown for a computer‑cleaning software LP
+      
+      ### Step 3: Tie‑breaker principle: When multiple labels could apply, choose the lowest level (e.g., if both Good and Fair apply, choose Fair). Focus on logical relevance and attribute consistency, not image aesthetics.
+      
+      ### Chain‑of‑thought guidance: 1) First identify the LP type. 2) Compare the image with the LP theme; if misaligned, label Bad. Dump intermediate conclusion at this step. 3) If aligned, further check attributes such as color, model, brand, location, and verify any image text with the LP. Conflicts or unverifiable text yield Bad. Dump intermediate conclusion at this step. 4) If no issues, judge the level of detail match: exact alignment is Good, broader alignment is Fair. Dump intermediate conclusion at this step. Apply the lowest‑level principle and provide a concise reason referencing signals from both the image and the LP.
+      
+      ## Output Requirements
+      
+      Let's do the judgment step-by-step. First use Chain-of-Thought to think through the problem.
+      
+      Then dump the final decision (i.e., Good/Fair/Bad) within <Result> and </Result>.
+      
+      ## Output Example
+      
+      <Result>Good</Result>
+      
+      Input:
+      Landing Page URL: {FinalUrl}
+      Image URL: {ImgUrl}
+      Landing Page Content: {doc}
+      
+      Output:

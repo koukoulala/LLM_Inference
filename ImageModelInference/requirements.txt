@@ -1,0 +1,4 @@
+vllm>=0.11.0
+qwen-vl-utils==0.0.14
+transformers>=4.57.0
+pandas

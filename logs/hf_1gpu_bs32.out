@@ -1,10 +1,0 @@
-nohup: ignoring input
-Number of GPUs specified by CUDA_VISIBLE_DEVICES: 1
-Loading checkpoint shards:   0%|          | 0/8 [00:00<?, ?it/s]Loading checkpoint shards:  12%|█▎        | 1/8 [00:00<00:02,  3.05it/s]Loading checkpoint shards:  25%|██▌       | 2/8 [00:00<00:01,  3.04it/s]Loading checkpoint shards:  38%|███▊      | 3/8 [00:01<00:02,  2.49it/s]Loading checkpoint shards:  50%|█████     | 4/8 [00:01<00:01,  2.68it/s]Loading checkpoint shards:  62%|██████▎   | 5/8 [00:01<00:01,  2.80it/s]Loading checkpoint shards:  75%|███████▌  | 6/8 [00:02<00:00,  2.86it/s]Loading checkpoint shards:  88%|████████▊ | 7/8 [00:02<00:00,  2.87it/s]Loading checkpoint shards: 100%|██████████| 8/8 [00:02<00:00,  3.35it/s]Loading checkpoint shards: 100%|██████████| 8/8 [00:02<00:00,  2.99it/s]
-You are using the default legacy behaviour of the <class 'transformers.models.llama.tokenization_llama_fast.LlamaTokenizerFast'>. This is expected, and simply means that the `legacy` (previous) behavior will be used so nothing changes for you. If you want to use the new behaviour, set `legacy=False`. This should only be set if you understand what it means, and thoroughly read the reason why this was added as explained in https://github.com/huggingface/transformers/pull/24565
-Processing 0th text
-Processing 100th text
-Total number of texts: 200
-Average time to complete texts:  1.051
-Average tokens/sec:  1.905
-Inference completed
