@@ -212,7 +212,7 @@ def evaluate_predictions(df: pd.DataFrame) -> Dict[str, Any]:
     
     return metrics
 
-# CUDA_VISIBLE_DEVICES=0 nohup python -u QwenVL_inference.py --model_path /data/xiaoyukou/ckpts/Qwen3-VL-4B-Instruct --prompt_name relevance > ../logs/inference_qwen3-vl-4b.out 2>&1 &
+# CUDA_VISIBLE_DEVICES=1 nohup python -u QwenVL_inference.py --model_path /data/xiaoyukou/ckpts/Qwen3-VL-2B-Instruct --prompt_name relevance > ../logs/inference_qwen3-vl-2b.out 2>&1 &
 def main():
     parser = argparse.ArgumentParser(
         description='Image and Landing Page Relevance Evaluation using Vision-Language Model'
@@ -232,7 +232,7 @@ def main():
     parser.add_argument(
         '--model_path',
         type=str,
-        default='/data/xiaoyukou/ckpts/Qwen3-VL-4B-Instruct',
+        default='/data/xiaoyukou/ckpts/Qwen3-VL-2B-Instruct',
         help='Path to the model checkpoint'
     )
     parser.add_argument(
@@ -250,7 +250,7 @@ def main():
     parser.add_argument(
         '--batch_size',
         type=int,
-        default=20,
+        default=40,
         help='Batch size for inference'
     )
     parser.add_argument(
@@ -357,6 +357,11 @@ def main():
     filtered_count = original_count - len(df)
     if filtered_count > 0:
         print(f"Filtered out {filtered_count} samples with 'can't load' label")
+    
+    # Calculate empty doc statistics
+    empty_doc_count = df['doc'].isna().sum() + (df['doc'].astype(str).str.strip() == '').sum()
+    empty_doc_ratio = empty_doc_count / len(df) if len(df) > 0 else 0.0
+    print(f"Empty doc entries: {empty_doc_count}/{len(df)} ({empty_doc_ratio:.2%})")
     print(f"Processing {len(df)} valid samples")
     
     # Initialize model
@@ -503,7 +508,9 @@ def main():
         'valid_samples': len(df),  # After filtering "can't load"
         'successful_samples': successful_samples,  # Successfully processed
         'failed_during_processing': len(failed_indices),  # Failed during image loading/processing
-        'success_rate': round(successful_samples / len(df), 4) if len(df) > 0 else 0.0
+        'success_rate': round(successful_samples / len(df), 4) if len(df) > 0 else 0.0,
+        'empty_doc_count': int(empty_doc_count),  # Number of samples with empty doc
+        'empty_doc_ratio': round(empty_doc_ratio, 4)  # Ratio of empty doc entries
     }
     
     if failed_indices:
@@ -524,6 +531,7 @@ def main():
     if len(failed_indices) > 0:
         print(f"Failed Indices: {failed_indices[:10]}{'...' if len(failed_indices) > 10 else ''}")
     print(f"Success Rate: {metrics['sample_stats']['success_rate']:.2%}")
+    print(f"Empty Doc Entries: {metrics['sample_stats']['empty_doc_count']} ({metrics['sample_stats']['empty_doc_ratio']:.2%})")
     
     print(f"\nLatency Statistics:")
     print(f"  Total Elapsed Time: {metrics['latency_stats']['total_elapsed_time_seconds']:.2f}s")
