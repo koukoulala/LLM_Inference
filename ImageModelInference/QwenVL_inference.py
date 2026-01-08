@@ -318,6 +318,12 @@ def main():
         default=0.95,
         help='GPU memory utilization (0.0-1.0, default: 0.95)'
     )
+    parser.add_argument(
+        '--output_file_name',
+        type=str,
+        default='',
+        help='Custom output file name (without extension). If empty, will auto-generate based on input file, prompt, and model name'
+    )
     
     args = parser.parse_args()
     
@@ -325,10 +331,17 @@ def main():
     os.makedirs(args.output_folder, exist_ok=True)
     
     # Generate output file names based on input file name, prompt name, and model name
-    input_basename = os.path.splitext(os.path.basename(args.input_file))[0]
-    model_name = os.path.basename(args.model_path.rstrip('/'))  # Extract model name from path
-    output_file = os.path.join(args.output_folder, f"{input_basename}_{args.prompt_name}_{model_name}_predictions.tsv")
-    eval_file = os.path.join(args.output_folder, f"{input_basename}_{args.prompt_name}_{model_name}_evaluation.json")
+    if args.output_file_name:
+        # Use custom output file name
+        base_name = args.output_file_name
+    else:
+        # Auto-generate based on input file, prompt name, and model name
+        input_basename = os.path.splitext(os.path.basename(args.input_file))[0]
+        model_name = os.path.basename(args.model_path.rstrip('/'))  # Extract model name from path
+        base_name = f"{input_basename}_{args.prompt_name}_{model_name}"
+    
+    output_file = os.path.join(args.output_folder, f"{base_name}_predictions.tsv")
+    eval_file = os.path.join(args.output_folder, f"{base_name}_evaluation.json")
     
     # Load prompts
     print(f"Loading prompts from {args.prompt_file}...")
@@ -469,10 +482,11 @@ def main():
     result_df['Think'] = all_thoughts
     result_df['RawOutput'] = all_raw_outputs
     
-    output_columns = [col for col in result_df.columns if col != 'doc']
+    # Select only required columns for output: FinalUrl, ImgUrl, Label, and prediction results
+    output_columns = ['FinalUrl', 'ImgUrl', 'Label', 'Prediction', 'RawOutput']
     result_df_output = result_df[output_columns]
     
-    # Save predictions (without doc column)
+    # Save predictions
     print(f"Saving predictions to {output_file}...")
     result_df_output.to_csv(output_file, sep='\t', index=False)
     
