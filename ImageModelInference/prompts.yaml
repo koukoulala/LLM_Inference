@@ -98,3 +98,11 @@ prompts:
       Landing Page Content: {doc}
       
       Output:
+
+  relevance_finetuned:
+    system: ""
+    user: |
+      Please evaluate the relevance between an image and a URL landing page (LP). Answer with only Good, Fair, or Bad.
+      URL: {FinalUrl}
+      LP: {doc}
+      Output:

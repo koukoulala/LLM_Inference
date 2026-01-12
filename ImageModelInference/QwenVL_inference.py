@@ -110,6 +110,7 @@ def create_messages_from_row(row: pd.Series, prompt_template: str) -> List[Dict]
 def parse_result(output_text: str) -> Dict[str, str]:
     """
     Parse the model output to extract Think and Result tags.
+    If no tags are found, treat the entire output as the result (for finetuned models).
     
     Args:
         output_text: Raw output from the model
@@ -131,6 +132,11 @@ def parse_result(output_text: str) -> Dict[str, str]:
     result_match = re.search(r'<Result>(.*?)</Result>', output_text, re.DOTALL | re.IGNORECASE)
     if result_match:
         result['result'] = result_match.group(1).strip()
+    else:
+        # If no Result tag found, check if there are no tags at all
+        # In that case, treat the entire output as the result (for finetuned models)
+        if not think_match:
+            result['result'] = output_text.strip()
     
     return result
 
@@ -256,7 +262,7 @@ def main():
     parser.add_argument(
         '--max_tokens',
         type=int,
-        default=1024,
+        default=2048,
         help='Maximum number of tokens to generate (out_seq_length)'
     )
     parser.add_argument(
